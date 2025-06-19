@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>登录页面</title>
+  <style>
+    /* 设置全局字体、背景图片、居中布局和基础样式 */
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif; /* 设置字体 */
+      background: url('img/class_bg.png') no-repeat center center fixed; /* 背景图片居中且固定 */
+      background-size: cover; /* 背景图片铺满整个页面 */
+      margin: 0; /* 去除默认外边距 */
+      padding: 0; /* 去除默认内边距 */
+      display: flex; /* 使用flex布局使内容居中 */
+      align-items: center; /* 垂直居中 */
+      justify-content: center; /* 水平居中 */
+      min-height: 100vh; /* 最小高度为视口高度 */
+    }
+
+    /* 登录容器样式 */
+    .login-container {
+      background: rgba(255, 255, 255, 0.96); /* 半透明白色背景 */
+      padding: 2.5rem 3rem; /* 内边距 */
+      border-radius: 12px; /* 圆角 */
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1); /* 阴影 */
+      width: 700px; /* 固定宽度 */
+      height: 400px;
+    }
+
+    /* 登录方式切换标签栏 */
+    .tabs {
+      display: flex; /* 横向排列 */
+      justify-content: space-around; /* 平均分布 */
+      border-bottom: 1px solid #ccc; /* 底部分割线 */
+      margin-bottom: 1.5rem; /* 下外边距 */
+    }
+
+    /* 标签栏每个选项的样式 */
+    .tabs div {
+      flex: 1; /* 平均分配宽度 */
+      text-align: center; /* 文字居中 */
+      padding: 0.8rem 0; /* 内边距 */
+      font-size: 1rem; /* 字体大小 */
+      cursor: pointer; /* 鼠标悬停为手型 */
+      color: #666; /* 字体颜色 */
+    }
+
+    /* 当前激活标签的样式 */
+    .tabs .active {
+      font-weight: bold; /* 加粗 */
+      border-bottom: 2px solid #0078d4; /* 底部高亮线 */
+      color: #000; /* 字体颜色加深 */
+    }
+
+    /* 表单分组容器 */
+    .form-group {
+      position: relative; /* 相对定位，为内部绝对定位元素做参考 */
+      margin-bottom: 1.2rem; /* 下外边距 */
+      display: flex; /* 使其和captcha一样为flex布局 */
+      align-items: center; /* 垂直居中 */
+    }
+
+    /* 输入框样式 */
+    .form-group input {
+      width: 100%; /* 宽度100% */
+      padding: 0.75rem; /* 内边距 */
+      padding-right: 2.5rem; /* 右侧留空间给图标 */
+      border: 1px solid #ccc; /* 边框 */
+      border-radius: 6px; /* 圆角 */
+      font-size: 1rem; /* 字体大小 */
+      flex: 1; /* 让input占据剩余空间，与captcha一致 */
+      margin-right: 0; /* 保持和captcha一致 */
+    }
+
+    /* 密码可见性切换图标样式 */
+    .form-group .toggle-password {
+      position: absolute; /* 绝对定位 */
+      right: 10px; /* 距右侧10px */
+      top: 50%; /* 垂直居中 */
+      transform: translateY(-50%); /* 精准垂直居中 */
+      cursor: pointer; /* 鼠标悬停为手型 */
+      font-size: 1.1rem; /* 图标大小 */
+      color: #888; /* 图标颜色 */
+    }
+
+    /* 验证码输入区域样式 */
+    .form-group.captcha {
+      display: flex; /* 横向排列 */
+      align-items: center; /* 垂直居中 */
+    }
+
+    /* 验证码输入框样式 */
+    .form-group.captcha input {
+      flex: 1; /* 占据剩余空间 */
+      margin-right: 10px; /* 右侧间距 */
+    }
+
+    /* 验证码图片样式 */
+    .form-group.captcha img {
+      height:41px; /* 固定高度 */
+      border-radius: 4px; /* 圆角 */
+    }
+
+    /* 登录按钮样式 */
+    .login-btn {
+      width: 100%; /* 宽度100% */
+      padding: 0.8rem; /* 内边距 */
+      background-color: #1890ff; /* 按钮背景色 */
+      color: white; /* 字体颜色 */
+      border: none; /* 无边框 */
+      border-radius: 6px; /* 圆角 */
+      font-size: 1rem; /* 字体大小 */
+      cursor: pointer; /* 鼠标悬停为手型 */
+      margin-top: 0.5rem; /* 上外边距 */
+    }
+
+    /* 登录按钮悬停效果 */
+    .login-btn:hover {
+      background-color: #147cd3; /* 悬停时变色 */
+    }
+
+    /* 额外选项（忘记密码/注册）容器 */
+    .options {
+      display: flex; /* 横向排列 */
+      justify-content: space-between; /* 两端对齐 */
+      margin-top: 1rem; /* 上外边距 */
+      font-size: 0.9rem; /* 字体稍小 */
+    }
+
+    /* 选项链接样式 */
+    .options a {
+      color: #1890ff; /* 链接颜色 */
+      text-decoration: none; /* 去除下划线 */
+    }
+
+    /* 链接悬停效果 */
+    .options a:hover {
+      text-decoration: underline; /* 悬停时显示下划线 */
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="tabs">
+      <div class="active">账号密码登录</div>
+      <div>验证码登录</div>
+    </div>
+    <form>
+      <div class="form-group">
+        <input type="text" placeholder="请输入账号 / 手机号 / 邮箱" required />
+      </div>
+      <div class="form-group">
+        <input type="password" placeholder="请输入密码" required />
+        <span class="toggle-password"></span>
+      </div>
+      <div class="form-group captcha">
+        <input type="text" placeholder="请输入验证码" required />
+        <img src="img/code.png" alt="验证码" />
+      </div>
+      <button type="submit" class="login-btn">登录</button>
+      <div class="options">
+        <a href="#">忘记密码</a>
+        <a href="#">立即注册</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

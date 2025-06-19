@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 设置视口以适配移动端设备 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<head>
+    <!-- 设置字符编码为UTF-8 -->
+    <meta charset="UTF-8">
+    <!-- 再次设置视口（建议只保留一个） -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>示例</title>
+    <style>
+        /* 全局基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft YaHei", sans-serif;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #ffffff;
+            scroll-behavior: smooth;
+        }
+        /* 头部样式 */
+        .header {
+            width: 100%;
+            height: 50px;
+            background-color: #fff;
+            border-bottom: 2px solid #1a56a7;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        /* 头部滚动收缩效果 */
+        .header.scrolled {
+            height: 80px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            width: 1200px;
+            height: 80%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        /* logo样式 */
+        .logo {
+            height: 50px;
+            transition: all 0.3s ease;
+        }
+        .header.scrolled .logo {
+            height: 40px;
+        }
+        /* 搜索框样式 */
+        .search-box {
+            position: relative;
+        }
+        .search-box input {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 200px;
+        }
+        .search-box input:focus {
+            width: 250px;
+            border-color: #1a56a7;
+        }
+        /* 导航栏样式 */
+        .nav {
+            background-color: #1a56a7;
+            height: 50px;
+            line-height: 50px;
+            position: sticky;
+            top: 100px;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+        /* 头部收缩时导航栏位置调整 */
+        .header.scrolled + .nav {
+            top: 80px;
+        }
+        .nav-content {
+            width: 1200px;
+            margin: 0 auto;
+            display: flex;
+        }
+        .nav-item {
+            color: white;
+            padding: 0 20px;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        /* 鼠标悬停在导航项时改变背景色，提升交互体验 */
+        /* 鼠标悬停在导航项时，改变背景色为深蓝色，提升交互体验 */
+        .nav-item:hover {
+            background-color: #0d4791;
+        }
+        /* 导航项下划线动画效果 */
+        .nav-item::after {
+            content: ''; /* 伪元素内容为空，用于显示下划线 */
+            position: absolute; /* 绝对定位，相对于.nav-item */
+            bottom: 0; /* 贴近导航项底部 */
+            left: 50%; /* 初始位置在导航项宽度的中间 */
+            width: 0; /* 初始宽度为0，实现动画效果 */
+            height: 3px; /* 下划线高度为3像素 */
+            background-color: #fff; /* 下划线颜色为白色 */
+            transition: all 0.3s ease; /* 平滑过渡动画 */
+        }
+        .nav-item:hover::after {
+            width: 100%;
+            left: 0;
+        }
+        /* 横幅区域样式 */
+        .banner {
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            margin-top: 150px;
+            position: relative;
+        }
+        /* 头部收缩时横幅位置调整 */
+        .header.scrolled ~ .banner {
+            margin-top: 130px;
+        }
+        .banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: zoomIn 15s infinite alternate;
+        }
+        /* 横幅图片缩放动画 */
+        @keyframes zoomIn {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.05);
+            }
+        }
+        /* 横幅文字样式及动画 */
+        .banner-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            opacity: 0;
+            animation: fadeIn 2s forwards 0.5s;
+            font-size: 2rem; /* 调整字体大小 */
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        /* 主体内容布局 */
+        .main {
+            width: 1200px;
+            margin: 40px auto;
+            display: flex;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 1s forwards;
+        }
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .left-content {
+            width: 70%;
+            margin-right: 20px;
+        }
+        .right-content {
+            width: 30%;
+        }
+        /* 新闻、通知、链接盒子样式 */
+        .news-box, .notice-box, .links-box {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .news-box:hover, .notice-box:hover, .links-box:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
+        /* 盒子标题样式 */
+        .box-title {
+            color: #1a56a7;
+            font-size: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1a56a7;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .box-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: #ffcc00;
+            transition: all 0.3s ease;
+        }
+        .news-box:hover .box-title::after,
+        .notice-box:hover .box-title::after,
+        .links-box:hover .box-title::after {
+            width: 100px;
+        }
+        /* 列表项样式 */
+        .news-item, .notice-item, .link-item {
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+            transition: all 0.3s ease;
+        }
+        .news-item:hover, .notice-item:hover, .link-item:hover {
+            background-color: #f9f9f9;
+            padding-left: 5px;
+        }
+        .news-item a, .notice-item a, .link-item a {
+            color: #333;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+        }
+        .news-item a:hover, .notice-item a:hover, .link-item a:hover {
+            color: #1a56a7;
+        }
+        .news-item a::before, .notice-item a::before {
+            content: '• ';
+            color: #1a56a7;
+        }
+        .date {
+            color: #999;
+            font-size: 12px;
+            margin-left: 10px;
+            float: right;
+        }
+        .link-item a::before {
+            content: '› ';
+            color: #1a56a7;
+        }
+        /* 页脚样式及动画 */
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+        .footer p {
+            margin: 10px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s forwards;
+        }
+        .footer p:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+        .footer p:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* 返回顶部按钮样式 */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background-color: #1a56a7;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .scroll-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .scroll-top:hover {
+            background-color: #0d4791;
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部区域，包含Logo和搜索框 -->
+    <div class="header">
+        <div class="header-content">
+            <!-- 企业Logo图片 -->
+            <img src="img/canva3.png" alt="企业Logo" class="logo">
+            <!-- 搜索框 -->
+            <div class="search-box">
+                <input type="text" placeholder="搜索...">
+            </div>
+        </div>
+    </div>
+    
+    <!-- 导航栏 -->
+    <div class="nav">
+        <div class="nav-content">
+            <div class="nav-item">首页</div>
+            <div class="nav-item">关于我们</div>
+            <div class="nav-item">产品服务</div>
+            <div class="nav-item">新闻中心</div>
+            <div class="nav-item">人才招聘</div>
+            <div class="nav-item">联系我们</div>
+        </div>
+    </div>
+    
+    <!-- 横幅区域，包含宣传图片和文字 -->
+    <div class="banner">
+        <img src="img/baidu1.png" alt="企业宣传图">
+        <div class="banner-text">
+            <h1>创造力和新思维</h1>
+            <p>创新引领未来 · 服务创造价值</p>
+        </div>
+    </div>
+    
+    <!-- 主体内容区域 -->
+    <div class="main">
+        <!-- 左侧内容：新闻动态 -->
+        <div class="left-content">
+            <div class="news-box">
+                <div class="box-title">新闻动态</div>
+                <div class="news-item">
+                    <a href="#">企业荣获2023年度行业最佳创新奖</a>
+                    <span class="date">2023-06-15</span>
+                </div>
+                <div class="news-item">
+                    <a href="#">公司新产品发布会圆满举行</a>
+                    <span class="date">2023-05-28</span>
+                </div>
+                <div class="news-item">
+                    <a href="#">企业与高校达成战略合作协议</a>
+                    <span class="date">2023-04-10</span>
+                </div>
+                <div class="news-item">
+                    <a href="#">公司参加国际行业展览会</a>
+                    <span class="date">2023-03-22</span>
+                </div>
+                <div class="news-item">
+                    <a href="#">企业社会责任报告发布</a>
+                    <span class="date">2023-02-15</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧内容：通知公告和快速链接 -->
+        <div class="right-content">
+            <!-- 通知公告 -->
+            <div class="notice-box">
+                <div class="box-title">通知公告</div>
+                <div class="notice-item">
+                    <a href="#">2023年端午节放假通知</a>
+                    <span class="date">2023-06-10</span>
+                </div>
+                <div class="notice-item">
+                    <a href="#">关于系统升级维护的通知</a>
+                    <span class="date">2023-05-20</span>
+                </div>
+                <div class="notice-item">
+                    <a href="#">企业招聘启事</a>
+                    <span class="date">2023-04-05</span>
+                </div>
+            </div>
+            
+            <!-- 快速链接 -->
+            <div class="links-box">
+                <div class="box-title">快速链接</div>
+                <div class="link-item">
+                    <a href="#">企业邮箱</a>
+                </div>
+                <div class="link-item">
+                    <a href="#">OA办公系统</a>
+                </div>
+                <div class="link-item">
+                    <a href="#">人力资源系统</a>
+                </div>
+                <div class="link-item">
+                    <a href="#">客户服务</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚区域 -->
+    <div class="footer">
+        <p>版权所有 © 2023 企业名称 | 地址：XX省XX市XX区XX路XX号</p>
+        <p>电话：000-12345678 | 邮箱：info@company.com | 备案号：ICP备XXXXXXXX号</p>
+    </div>
+    
+    <!-- 返回顶部按钮 -->
+    <div class="scroll-top">↑</div>
+
+    <script>
+        // 监听滚动事件，实现头部缩小效果
+        window.addEventListener('scroll', function() {
+            // 获取头部元素
+            const header = document.querySelector('.header');
+            // 当页面滚动超过50像素时，添加'scrolled'类，否则移除
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // 获取返回顶部按钮元素
+        const scrollTop = document.querySelector('.scroll-top');
+        // 监听滚动事件，控制返回顶部按钮的显示与隐藏
+        window.addEventListener('scroll', function() {
+            // 当页面滚动超过300像素时，显示按钮，否则隐藏
+            if (window.scrollY > 300) {
+                scrollTop.classList.add('active');
+            } else {
+                scrollTop.classList.remove('active');
+            }
+        });
+        // 点击返回顶部按钮，平滑滚动到页面顶部
+        scrollTop.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // 导航菜单点击事件，实现平滑滚动到主体内容区域
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 平滑滚动到.main元素顶部，减去150像素用于头部高度的偏移
+                window.scrollTo({
+                    top: document.querySelector('.main').offsetTop - 150,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
